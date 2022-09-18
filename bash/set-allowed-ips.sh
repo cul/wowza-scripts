@@ -10,6 +10,10 @@ usage() {
   echo 'Usage:'
   echo "  $script_name [--admin_url_with_port <value>] [--application_name <value>] [--user <value>] [--password <value>] [--ip_whitelist <value>]"
   echo ''
+  echo ''
+  echo "Important note: By default, this script only works when run on the same server that wowza is running on, using a localhost url.  If you want to use it from a different server, you must add that server's IP to the top level Wowza Server.xml config's <RESTInterface> <IPWhiteList> property."
+  echo ''
+  echo ''
   echo 'Examples:'
   echo "  $script_name --admin_url_with_port http://localhost:8087 --application_name myapp --user wowza --password wowzapassword --ip_whitelist 192.168.1.1,192.168.1.2"
   echo "  $script_name --verbose --admin_url_with_port http://localhost:8087 --application_name myapp --user wowza --password wowzapassword --ip_whitelist 192.168.1.1,192.168.1.2"
