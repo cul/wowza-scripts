@@ -90,24 +90,37 @@ set -- "${positional_args[@]}" # restore positional arguments
 # Update IP whitelist
 curl --digest -u "$user:$password" -X PUT -H 'Accept:application/json; charset=utf-8' -H 'Content-Type:application/json; charset=utf-8' $admin_url_with_port/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/$application_name/adv -d"
 {
-   \"advancedSettings\": [{
-       \"enabled\": true,
-       \"canRemove\": true,
-       \"name\": \"securityPlayIPAllowList\",
-       \"value\": \"$ip_whitelist\",
-       \"defaultValue\": null,
-       \"type\": \"String\",
-       \"sectionName\": \"Application\",
-       \"section\": \"/Root/Application\",
-       \"documented\": false
-   }]
+    \"advancedSettings\": [{
+      \"enabled\": true,
+      \"canRemove\": true,
+      \"name\": \"securityPlayIPAllowList\",
+      \"value\": \"$ip_whitelist\",
+      \"defaultValue\": null,
+      \"type\": \"String\",
+      \"sectionName\": \"Application\",
+      \"section\": \"/Root/Application\",
+      \"documented\": false
+    }]
+}"
+
+# Re-add security module (which is deleted when IP whitelist is updated)
+curl --digest -u "$user:$password" -X PUT -H 'Accept:application/json; charset=utf-8' -H 'Content-Type:application/json; charset=utf-8' $admin_url_with_port/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/$application_name -d"
+{
+    \"modules\": {
+      \"restURI\": \"$admin_url_with_port/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/$application_name/modules\",
+      \"moduleList\": [{
+        \"order\": 0,
+        \"name\": \"ModuleCoreSecurity\",
+        \"description\": \"Core Security Module for Applications\",
+        \"class\": \"com.wowza.wms.security.ModuleCoreSecurity\"
+      }]
+    }
 }"
 
 echo -e "\nDone!"
 
 # TODO: Restart application
-# Command below is not compatible with our current Wowza installation
 
-#echo "Restarting application: $application_name ..."
-#curl --digest -u "$user:$password" -X PUT -H 'Accept:application/json; charset=utf-8' $admin_url_with_port/v2/servers/defaultServer/vhosts/defaultVHost/applications/$application_name/actions/restart
-#echo -e "\nDone!"
+echo "Restarting application: $application_name ..."
+curl --digest -u "$user:$password" -X PUT -H 'Accept:application/json; charset=utf-8' $admin_url_with_port/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/$application_name/actions/restart
+echo -e "\nDone!"
